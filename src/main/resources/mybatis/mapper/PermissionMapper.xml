@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.scitc.shiro.mapper.PermissionMapper">
+    <select id="findUserPermissionByName" resultType="com.scitc.shiro.pojo.Permission">
+        select p.* from permission p
+        where p.id in (
+                select rp.permission_id from role_permission rp
+                where rp.role_id in(
+                    select ur.role_id from  user_role ur
+                        where ur.user_id in (select u.id from user u
+                        where username = #{username})
+                        )
+                   )
+        <if test="type != null ">
+            AND p.type= #{type}
+        </if>
+    </select>
+
+    <select id="sets" resultType="com.scitc.shiro.pojo.Permission">
+        select * from permission;
+    </select>
+</mapper>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.scitc.shiro.mapper.UserMapper">
+    <resultMap id="userMap" type="com.scitc.shiro.pojo.User">
+        <id column="id" property="id"/>
+        <result column="username" property="username"/>
+        <result column="password" property="password"/>
+        <result column="salt" property="salt"/>
+        <collection property="roleSet" ofType="com.scitc.shiro.pojo.Role">
+            <id column="r_id" property="id"/>
+            <result column="role" property="role"/>
+            <result column="description" property="description"/>
+            <collection property="permissionSet" ofType="com.scitc.shiro.pojo.Permission">
+                <id column="p_id" property="id"/>
+                <result column="name" property="name"/>
+                <result column="url" property="url"/>
+                <result column="type" property="type"/>
+                <result column="parent_id" property="parentId"/>
+            </collection>
+        </collection>
+    </resultMap>
+    <select id="findUserRoleAndPermission" resultMap="userMap" parameterType="String" >
+        select u.id,u.username,u.password,u.salt,r.id r_id,r.role,r.description,p.id p_id,p.name,p.url,p.parent_id
+        from user u
+        inner join user_role ur  on ur.user_id = u.id
+        inner join role r on r.id = ur.role_id
+        inner join role_permission rp on rp.role_id = r.id
+        inner join permission p on p.id = rp.permission_id
+        where u.username = #{username}
+    </select>
+
+    <select id="findUserByName" resultType="com.scitc.shiro.pojo.User" >
+        select id,username,password,salt from user where  username = #{username}
+    </select>
+
+
+
+    <insert id="save" useGeneratedKeys="true" keyColumn="id" keyProperty="id"  parameterType="com.scitc.shiro.pojo.User" >
+        insert into user(username,password,salt) values(#{username},#{password},#{salt})
+    </insert>
+</mapper>

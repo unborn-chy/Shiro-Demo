@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+
+    </style>
+</head>
+<body>
+<ul id="root">
+</ul>
+</body>
+<script type="text/javascript" th:src="@{/jquery-3.4.1.min.js}"></script>
+<script>
+    $(function () {
+        $.ajax({
+            type: 'get',
+            url: '/myPermission',
+            success: function (data) {
+                $("#root").append(children(data));
+            }
+        });
+
+        // 实现递归展示权限 可用作展示菜单列表
+        function children(data) {
+            var childrenHtml = '<ul>';
+            data.forEach(function (item, index) {
+                childrenHtml += `<li>${item.id}  ${item.name}</li>`;
+                if (item.children.length > 0) {
+                    childrenHtml += children(item.children);
+                    console.log("if里面" + children(item.children))
+                }
+            });
+            return childrenHtml + '</ul>';
+        }
+
+
+    })
+</script>
+</html>
